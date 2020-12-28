@@ -3,4 +3,7 @@ document.addEventListener('DOMContentLoaded', e => {
   const $ = document.querySelector.bind(document);
   const $$ = document.querySelectorAll.bind(document);
 
+  $('#search').on('submit', e => {
+    e.preventDefault();
+  })
 })
