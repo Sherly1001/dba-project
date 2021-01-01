@@ -3,7 +3,7 @@ const express = require('express');
 const router = new express.Router();
 
 router.get('/', (req, res) => {
-  res.render('index', {title: 'DBA Project'});
+  res.render('index', {title: 'Kết nối và dạy học'});
 })
 
 router.get('/tutors', (req, res) => {
