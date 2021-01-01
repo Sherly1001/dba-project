@@ -1,11 +1,20 @@
-<nav class="navbar navbar-dark bg-dark ticky-top">
-  <a href="/" class="navbar-brand"><i class="fas fa-school"></i></a>
-  <form class="form-inline" id="search">
-    <input type="text" class="form-control mr-sm-2" placeholder="Tìm gia sư theo môn học và địa điểm">
-    <button type="submit" class="btn btn-success"><i class="fas fa-search"></i></button>
-  </form>
-  <div class="login">
-    <a href="#" class="btn">Đăng nhập</a>
-    <a href="#" class="btn btn-outline-primary"></button>Đăng ký</a>
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+  <div class="container">
+    <a href="/" class="navbar-brand"><i class="fas fa-school"></i></a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="navbar-toggler-icon"></i>
+    </button>
+    <div class="collapse navbar-collapse justify-content-around" id="nav">
+      <form id="search" action="/tutors" class="row w-50 m-0 p-0">
+        <div class="input-group p-1">
+          <input type="text" name="q" class="form-control" placeholder="Tìm gia sư theo môn học và địa điểm">
+          <button type="submit" class="btn btn-success"><i class="fas fa-search"></i></button>
+        </div>
+      </form>
+      <div class="navbar-nav" id="login">
+        <a href="#" class="btn btn-outline-secondary nav-link m-1">Đăng nhập</a>
+        <a href="#" class="btn btn-primary nav-link m-1">Đăng ký</a>
+      </div>
+    </div>
   </div>
 </nav>
