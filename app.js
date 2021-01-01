@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use(express.static('public'));
+app.use(express.static('lib'));
 app.use(expressEjsLayouts);
 app.set('view engine', 'ejs');
 
