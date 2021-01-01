@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon -e js,ejs,css,mjs,json"
+    "dev": "livereload . -e ejs,js,html,css & nodemon"
   },
   "author": "",
   "license": "ISC",
