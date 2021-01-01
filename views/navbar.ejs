@@ -5,6 +5,14 @@
       <i class="navbar-toggler-icon"></i>
     </button>
     <div class="collapse navbar-collapse justify-content-around" id="nav">
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" id="danhmuc" data-bs-toggle="dropdown" aria-expanded="false">Danh mục</button>
+        <div class="dropdown-menu" aria-labelledby="danhmuc">
+          <a href="/new-class" class="dropdown-item"><i class="fas fa-plus-circle"></i> Đăng yêu cầu</a>
+          <a href="/class" class="dropdown-item"><i class="fas fa-book"></i> Xem lớp mới</a>
+          <a href="/become-tutor" class="dropdown-item"><i class="fas fa-graduation-cap"></i> Trở thành gia sư</a>
+        </div>
+      </div>
       <form id="search" action="/tutors" class="row w-50 m-0 p-0">
         <div class="input-group p-1">
           <input type="text" name="q" class="form-control" placeholder="Tìm gia sư theo môn học và địa điểm">
@@ -13,7 +21,7 @@
       </form>
       <div class="navbar-nav" id="login">
         <a href="#" class="btn btn-outline-secondary nav-link m-1">Đăng nhập</a>
-        <a href="#" class="btn btn-primary nav-link m-1">Đăng ký</a>
+        <a href="#" class="btn btn-primary nav-link m-1 text-white">Đăng ký</a>
       </div>
     </div>
   </div>
