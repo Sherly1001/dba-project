@@ -16,4 +16,13 @@ api.post('/', (req, res) => {
   res.json(req.body);
 })
 
+api.get('/login', (req, res) => {
+  if (req.query.user) {
+    res.json({...req.query, result: true});
+  }
+  else {
+    res.json({result: false});
+  }
+})
+
 module.exports = api;

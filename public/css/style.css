@@ -1,0 +1,23 @@
+#popup {
+  background: #fff;
+  z-index: 2000;
+  position: fixed;
+  width: 30%;
+  left: 50%;
+  top: -200%;
+  transform: translate(-50%, -50%);
+  border-radius: 1em;
+  outline: none;
+  box-shadow: 0 0 .8em .2em;
+  transition: all .5s ease;
+}
+
+#outside-popup {
+  z-index: 1999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+}
