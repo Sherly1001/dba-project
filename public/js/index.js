@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', e => {
       if (res.result) {
         document.cookie = `user=${res.user}`;
         document.cookie = `pass=${res.pass}`;
+        document.cookie = `role=${res.role}`;
+        if (res.name) document.cookie = `name=${res.name}`;
       }
       return res.result;
     });
@@ -25,6 +27,7 @@ document.addEventListener('DOMContentLoaded', e => {
   const logout = e => {
     delete_cookie('user');
     delete_cookie('pass');
+    delete_cookie('name');
     document.location = '/';
   }
   const vertify = async () => {

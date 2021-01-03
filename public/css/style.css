@@ -2,7 +2,7 @@
   background: #fff;
   z-index: 2000;
   position: fixed;
-  width: 30%;
+  width: 25em;
   left: 50%;
   top: -200%;
   transform: translate(-50%, -50%);
