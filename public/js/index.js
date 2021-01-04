@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', e => {
 
   vertify().then(res => {
     if (res) {
-      let cnt = `<a href="/my-profile" class="nav-link me-3">${cookies.user}</a>`;
+      let cnt = `<a href="/my-profile" class="nav-link me-3">${cookies.name || cookies.user}</a>`;
       cnt += '<a href="#" class="nav-link btn btn-secondary">Đăng xuất</a>';
       lg.innerHTML = cnt;
       lg.lastElementChild.on('click', logout);
