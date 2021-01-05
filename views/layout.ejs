@@ -14,8 +14,29 @@
 <%- include('navbar') %>
 <%- body %>
 </div>
+<div class="toast-list" style="position: fixed; top: 5em; right: 5em; left: unset; display: flex; flex-direction: column;"></div>
+<div id="toast" class="toast text-white border-0 mb-3" style="display: none;" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="d-flex align-items-center">
+    <div class="toast-body"></div>
+    <button type="button" class="btn-close btn-close-white ms-auto me-2" data-bs-dismiss="toast" aria-label="Close"></button>
+  </div>
+</div>
 <div id="popup" class="text-center p-3"></div>
 <div id="outside-popup"></div>
 <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script>
+const show_toast = (str, err = false) => {
+  let t = document.querySelector('#toast');
+  let tl = document.querySelector('.toast-list');
+  let cl = t.cloneNode(true);
+  cl.removeAttribute('style');
+  cl.removeAttribute('id');
+  cl.querySelector('.toast-body').innerText = str;
+  let tt = new bootstrap.Toast(cl);
+  cl.classList.add(err ? 'bg-danger' : 'bg-success');
+  tl.appendChild(cl);
+  tt.show();
+}
+</script>
 </body>
 </html>

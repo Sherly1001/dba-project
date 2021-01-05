@@ -10,4 +10,8 @@ router.get('/tutors', (req, res) => {
   res.render('tutors', {title: 'Tìm kiếm gia sư', tutors: null});
 })
 
+router.get('/become-tutor', (req, res) => {
+  res.render('become-tutor', {title: 'Đăng ký làm gia sư'})
+})
+
 module.exports = router;

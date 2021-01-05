@@ -7,7 +7,7 @@ const valid_pass = (a, b) => a == b || a == sha256(b) || sha256(a) == b;
 
 const db = new pg.Client(process.env.db_connect);
 db.connect(err => {
-  console.log(db.connection.stream._host + ' connected');
+  console.log(db.host + ' connected');
 })
 
 const api = new express.Router();
@@ -42,6 +42,19 @@ api.get('/login', async (req, res) => {
   else {
     res.json({result: false});
   }
+})
+
+api.post('/signin', (req, res) => {
+  db.query('insert into tutors (name, phone, username, pass) values ($1, $2, $3, $4)', req.body.tutor_info)
+  .then(async rs => {
+    for (let i in req.body.free_time) {
+      await db.query('insert into datetime (day, morning, noon, night) values ($1, $2, $3, $4) on conflict do nothing', req.body.free_time[i]);
+      let datetime = await db.query('select datetime_id from datetime where day = $1 and morning = $2 and noon = $3 and night = $4', req.body.free_time[i]);
+      let tutor = await db.query('select tutor_id from tutors where username = $1', [req.body.tutor_info[2]]);
+      await db.query('insert into tutor_times (tutor_id, datetime_id) values ($1, $2)', [tutor.rows[0].tutor_id, datetime.rows[0].datetime_id]);
+    }
+    res.json({result: true});
+  }).catch(err => res.json({err: err, result: false}));
 })
 
 module.exports = api;

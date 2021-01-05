@@ -60,11 +60,11 @@ document.addEventListener('DOMContentLoaded', e => {
 
     cnt += `<form>
     <div class="form-floating mb-3">
-      <input class="form-control" id="username" name="username" placeholder="username">
+      <input class="form-control" id="username" name="username" placeholder="username" required>
       <label for="username">Username</label>
     </div>
     <div class="form-floating mb-3">
-      <input class="form-control" type="password" id="pass" name="pass" placeholder="password">
+      <input class="form-control" type="password" id="pass" name="pass" placeholder="password" required>
       <label for="pass">Password</label>
     </div>
     <button type="submit" class="btn btn-primary">Đăng nhập</button>
@@ -86,6 +86,7 @@ document.addEventListener('DOMContentLoaded', e => {
           document.location = '/';
         } else {
           hide_popup(e);
+          show_toast('Lỗi đăng nhập', true);
         }
       });
     });
