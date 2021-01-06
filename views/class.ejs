@@ -153,7 +153,19 @@
         })
         update_enroll();
       }
-    })
+    }).catch(err => console.log(err));
+
+    fetch('/api/total-class').then(res => res.json())
+    .then(rs => {
+      for (let i = 0; i < parseInt(rs.result / 10); ++i) {
+        let bt = document.createElement('div');
+        bt.className = 'col btn btn-secondary m-2';
+        if (i + 1 == query.get('page')) bt.classList.replace('btn-secondary', 'btn-success');
+        bt.innerText = i + 1
+        bt.addEventListener('click', e => document.location = `/class?page=${i + 1}`);
+        document.querySelector('#next').insertAdjacentElement('beforebegin', bt);
+      }
+    }).catch(err => console.log(err));
 
     document.querySelector('#prev').addEventListener('click', e => {
       let curr = query.get('page') || 0;
