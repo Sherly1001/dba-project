@@ -19,4 +19,8 @@ router.get('/class', (req, res) => {
   res.render('class', {title: 'Các lớp mới'});
 })
 
+router.get('/new-class', (req, res) => {
+  res.render('new-class.ejs', {title: 'Đăng yêu cầu mở lớp mới'});
+})
+
 module.exports = router;
