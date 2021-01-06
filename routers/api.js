@@ -57,4 +57,57 @@ api.post('/signin', (req, res) => {
   }).catch(err => res.json({err: err, result: false}));
 })
 
+api.get('/class', (req, res) => {
+  let status_id = req.query.status_id || 1;
+  let limit = req.query.limit || 20;
+  let next = req.query.next || 0;
+  db.query(`select class_id, grade, subject_name, day, morning, noon, night from class_times
+  natural join class
+  natural join subjects
+  natural join datetime
+  where class_id in (
+    select class_id from enrollments
+    where status_id = $1
+    group by class_id
+    limit $2
+    offset $3
+  )`, [status_id, limit, next * limit]).then(rs => {
+    let classes = rs.rows.reduce((acc, i) => {
+      let curr = acc.findIndex(e => e.class_id == i.class_id);
+      if (curr < 0) {
+        acc.push({
+          class_id: i.class_id,
+          grade: i.grade,
+          subject_name: i.subject_name,
+          times: [{day: i.day, morning: i.morning, noon: i.noon, night: i.night}]
+        })
+      } else {
+        acc[curr].times.push({day: i.day, morning: i.morning, noon: i.noon, night: i.night});
+      }
+      return acc;
+    }, []);
+    res.json({result: classes});
+  }).catch(err => res.json({err: err, result: false}));
+})
+
+api.get('/enroll', (req, res) => {
+  db.query('select tutor_id from tutors where username = $1', [req.query.user])
+  .then(rs => {
+    db.query('insert into enrollments (tutor_id, class_id) values ($1, $2)', [rs.rows[0].tutor_id, req.query.class_id])
+    .then(rs => {
+      res.json({result: true});
+    }).catch(err => res.json({err: err, result: false}));
+  }).catch(err => res.json({err: err, result: false}));
+})
+
+api.get('/check-enroll', (req, res) => {
+  db.query('select tutor_id from tutors where username = $1', [req.query.user])
+  .then(rs => {
+    db.query('select enroll_id from enrollments where tutor_id = $1 and class_id = $2', [rs.rows[0].tutor_id, req.query.class_id])
+    .then(rs => {
+      res.json({result: rs.rowCount});
+    }).catch(err => res.json({err: err, result: false}));
+  }).catch(err => res.json({err: err, result: false}));
+})
+
 module.exports = api;

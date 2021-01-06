@@ -1,0 +1,169 @@
+<div class="container">
+  <div class="row mt-5" id="class-list">
+  </div>
+  <div class="row mt-5">
+    <div class="col btn btn-secondary m-2" id="prev">Trước</div>
+    <div class="col btn btn-secondary m-2" id="next">Sau</div>
+  </div>
+</div>
+
+<div id="class-template" style="display: none;">
+  <div class="col-md-6 col-sm-12 mb-3">
+    <div class="card">
+      <div class="card-header text-center"><h4>Lớp học #<span class="class_id"></span></h4></div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-9">
+            <div class="card-text">Môn: <span class="subject"></span></div>
+            <div class="card-text">Lớp: <span class="grade"></span></div>
+          </div>
+          <div class="col-3">
+            <button class="btn btn-secondary w-100 h-100">Enroll</button>
+          </div>
+        </div>
+        <div class="time mt-3 text-center">
+          <h5>Thời gian học</h5>
+          <table class="table text-center">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Thứ 2</th>
+                <th scope="col">Thứ 3</th>
+                <th scope="col">Thứ 4</th>
+                <th scope="col">Thứ 5</th>
+                <th scope="col">Thứ 6</th>
+                <th scope="col">Thứ 7</th>
+                <th scope="col">Chủ nhật</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Sáng</th>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+              </tr>
+              <tr>
+                <th scope="row">Chiều</th>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+              </tr>
+              <tr>
+                <th scope="row">Tối</th>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', e => {
+    const class_list = document.querySelector('#class-list');
+    const class_template = document.querySelector('#class-template');
+    const query = new URLSearchParams(window.location.search);
+
+    const cookies = Object.fromEntries(document.cookie.split(/; */).map(c => {
+      const [key, v] = c.split('=', 2);
+      return [key, decodeURIComponent(v)];
+    }));
+
+    const enroll_event = e => {
+      if (cookies.user && cookies.pass && cookies.role) {
+        fetch(`/api/enroll?user=${cookies.user}&class_id=${e.target.class_id}`)
+        .then(res => res.json())
+        .then(rs => {
+          if (rs.result) {
+            show_toast('Enroll thành công');
+            update_enroll(e.target.class_id);
+          } else {
+            show_toast('Lỗi enrollment', true);
+          }
+        })
+      } else {
+        show_toast('Bạn chưa đăng nhập', true)
+      }
+    }
+
+    const update_enroll = id => {
+      if (id) {
+        if (cookies.user && cookies.pass && cookies.role) {
+          let btn = document.getElementById(id).querySelector('button');
+          fetch(`/api/check-enroll?user=${cookies.user}&class_id=${id}`)
+          .then(res => res.json())
+          .then(rs => {
+            if (rs.result) {
+              btn.removeEventListener('click', enroll_event);
+              btn.classList.replace('btn-secondary', 'btn-success');
+            } else {
+            }
+          })
+        }
+      } else {
+        for (let i = 0; i < class_list.childElementCount; ++i) {
+          update_enroll(class_list.children[i].id);
+        }
+      }
+    }
+
+    let next = query.get('page') || 0;
+    let limit = query.get('limit') || 10;
+    let status_id = query.get('status_id') || 1;
+
+    let mapp = ['morning', 'noon', 'night'];
+
+    fetch(`/api/class?next=${next}&limit=${limit}&status_id=${status_id}`)
+    .then(res => res.json())
+    .then(res => {
+      if (res.result) {
+        res.result.forEach(cl => {
+          let c = class_template.firstElementChild.cloneNode(true);
+          c.id = cl.class_id;
+          c.querySelector('.class_id').innerText = cl.class_id;
+          c.querySelector('.subject').innerText = cl.subject_name;
+          c.querySelector('.grade').innerText = cl.grade;
+          let tbd = c.querySelector('tbody');
+          cl.times.forEach(d => {
+            for (let i = 0; i < 3; ++i) {
+              tbd.children[i].children[1 + (d.day + 5) % 7].firstElementChild.checked = d[mapp[i]]
+            }
+          })
+          let btn = c.querySelector('button');
+          btn.class_id = cl.class_id;
+          btn.addEventListener('click', enroll_event);
+          class_list.appendChild(c);
+        })
+        update_enroll();
+      }
+    })
+
+    document.querySelector('#prev').addEventListener('click', e => {
+      let curr = query.get('page') || 0;
+      curr -= 1;
+      document.location = `/class${(curr > 0) ? '?page=' + curr : ''}`;
+    })
+    document.querySelector('#next').addEventListener('click', e => {
+      let curr = query.get('page') || 0;
+      curr -= -1;
+      document.location = `/class${(curr > 0) ? '?page=' + curr : ''}`;
+    })
+  })
+</script>

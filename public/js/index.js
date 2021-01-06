@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', e => {
     delete_cookie('user');
     delete_cookie('pass');
     delete_cookie('name');
+    delete_cookie('role');
     document.location = '/';
   }
   const vertify = async () => {
@@ -83,7 +84,7 @@ document.addEventListener('DOMContentLoaded', e => {
       
       login(username, pass).then(res => {
         if (res) {
-          document.location = '/';
+          document.location.reload();
         } else {
           hide_popup(e);
           show_toast('Lỗi đăng nhập', true);

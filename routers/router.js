@@ -1,4 +1,5 @@
 const express = require('express');
+const fetch = require('node-fetch');
 
 const router = new express.Router();
 
@@ -12,6 +13,10 @@ router.get('/tutors', (req, res) => {
 
 router.get('/become-tutor', (req, res) => {
   res.render('become-tutor', {title: 'Đăng ký làm gia sư'})
+})
+
+router.get('/class', (req, res) => {
+  res.render('class', {title: 'Các lớp mới'});
 })
 
 module.exports = router;

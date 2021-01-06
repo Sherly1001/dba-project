@@ -34,6 +34,7 @@ const show_toast = (str, err = false) => {
   cl.querySelector('.toast-body').innerText = str;
   let tt = new bootstrap.Toast(cl);
   cl.classList.add(err ? 'bg-danger' : 'bg-success');
+  cl.addEventListener('hidden.bs.toast', e => e.target.remove());
   tl.appendChild(cl);
   tt.show();
 }
