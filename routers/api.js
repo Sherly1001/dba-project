@@ -131,21 +131,25 @@ api.get('/subjects', (req, res) => {
 })
 
 api.post('/new-class', (req, res) => {
-  db.query('insert into class (subject_id, grade) values ($1, $2) returning class_id', req.body.class_info)
-  .then(async rs => {
-    try {
-      for (let i in req.body.times) {
-        await db.query('insert into datetime (day, morning, noon, night) values ($1, $2, $3, $4) on conflict do nothing', req.body.times[i]);
-        let datetime = await db.query('select datetime_id from datetime where day = $1 and morning = $2 and noon = $3 and night = $4', req.body.times[i]);
-        await db.query('insert into class_times (class_id, datetime_id) values ($1, $2)', [rs.rows[0].class_id, datetime.rows[0].datetime_id]);
+  db.query('select parrent_id from parrents where username = $1', [req.body.parrent]).then(pr => {
+    db.query('insert into class (subject_id, grade, parrent_id) values ($1, $2, $3) returning class_id',
+      [...req.body.class_info, pr.rows[0].parrent_id])
+    .then(async rs => {
+      try {
+        for (let i in req.body.times) {
+          await db.query('insert into datetime (day, morning, noon, night) values ($1, $2, $3, $4) on conflict do nothing',
+            req.body.times[i]);
+          let datetime = await db.query('select datetime_id from datetime where day = $1 and morning = $2 and noon = $3 and night = $4',
+            req.body.times[i]);
+          await db.query('insert into class_times (class_id, datetime_id) values ($1, $2)',
+            [rs.rows[0].class_id, datetime.rows[0].datetime_id]);
+        }
+        await db.query('insert into enrollments (class_id, tutor_id) values ($1, $2)', [rs.rows[0].class_id, 1]);
+        res.json({result: rs.rows[0].class_id});
+      } catch (err) {
+        res.json({err: err, result: false});
       }
-      let pr = await db.query('select parrent_id from parrents where username = $1', [req.body.parrent]);
-      await db.query('insert into parrent_class (parrent_id, class_id) values ($1, $2)', [pr.rows[0].parrent_id, rs.rows[0].class_id]);
-      await db.query('insert into enrollments (class_id, tutor_id) values ($1, $2)', [rs.rows[0].class_id, 1]);
-      res.json({result: rs.rows[0].class_id});
-    } catch (err) {
-      res.json({err: err, result: false});
-    }
+    }).catch(err => res.json({err: err, result: false}));
   }).catch(err => res.json({err: err, result: false}));
 })
 
