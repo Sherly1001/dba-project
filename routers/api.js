@@ -153,4 +153,40 @@ api.post('/new-class', (req, res) => {
   }).catch(err => res.json({err: err, result: false}));
 })
 
+api.get('/tutors', (req, res) => {
+  let limit = req.query.limit || 20;
+  let next = req.query.page || 0;
+  db.query(`select tutor_id, name, day, morning, noon, night from tutor_times
+  natural join tutors
+  natural join datetime
+  where tutor_id in (
+    select tutor_id from tutor_times
+    group by tutor_id
+    order by tutor_id
+    limit $1
+    offset $2
+  )`, [limit, next * limit]).then(rs => {
+    let tts = rs.rows.reduce((acc, i) => {
+      let curr = acc.findIndex(e => e.tutor_id == i.tutor_id);
+      if (curr < 0) {
+        acc.push({
+          tutor_id: i.tutor_id,
+          tutor_name: i.name,
+          times: [{day: i.day, morning: i.morning, noon: i.noon, night: i.night}]
+        })
+      } else {
+        acc[curr].times.push({day: i.day, morning: i.morning, noon: i.noon, night: i.night});
+      }
+      return acc;
+    }, []);
+    res.json({result: tts});
+  }).catch(err => res.json({err: err, result: false}));
+})
+
+api.get('/total-tutors', (req, res) => {
+  db.query('select count(*) from tutors').then(rs => {
+    res.json({result: rs.rows[0].count});
+  }).catch(err => res.json({err: err, result: false}));
+})
+
 module.exports = api;

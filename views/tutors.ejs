@@ -1,0 +1,132 @@
+<div class="container">
+  <div class="row mt-5" id="tutor-list">
+  </div>
+  <div class="row mt-5">
+    <div class="col btn btn-secondary m-2" id="prev">Trước</div>
+    <div class="col btn btn-secondary m-2" id="next">Sau</div>
+  </div>
+</div>
+
+<div id="tutor-template" style="display: none;">
+  <div class="col-md-6 col-sm-12 mb-3">
+    <div class="card">
+      <div class="card-header text-center"><h4>Gia sư #<span class="tutor_id"></span></h4></div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-9">
+            <div class="card-text">Tên: <span class="name"></span></div>
+          </div>
+          <div class="col-3">
+            <button class="btn btn-secondary w-100 h-100">Xem thêm</button>
+          </div>
+        </div>
+        <div class="time mt-3 text-center">
+          <h5>Thời gian rảnh</h5>
+          <table class="table text-center">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Thứ 2</th>
+                <th scope="col">Thứ 3</th>
+                <th scope="col">Thứ 4</th>
+                <th scope="col">Thứ 5</th>
+                <th scope="col">Thứ 6</th>
+                <th scope="col">Thứ 7</th>
+                <th scope="col">Chủ nhật</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Sáng</th>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+              </tr>
+              <tr>
+                <th scope="row">Chiều</th>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+              </tr>
+              <tr>
+                <th scope="row">Tối</th>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+                <td><input type="checkbox" disabled></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', e => {
+    const tutor_list = document.querySelector('#tutor-list');
+    const tutor_template = document.querySelector('#tutor-template');
+    const query = new URLSearchParams(window.location.search);
+
+    let next = query.get('page') || 0;
+    let limit = query.get('limit') || 20;
+
+    let mapp = ['morning', 'noon', 'night'];
+
+    fetch(`/api/tutors?next=${next}&limit=${limit}`)
+    .then(res => res.json())
+    .then(res => {
+      if (res.result) {
+        res.result.forEach(cl => {
+          let c = tutor_template.firstElementChild.cloneNode(true);
+          c.id = cl.tutor_id;
+          c.querySelector('.tutor_id').innerText = cl.tutor_id;
+          c.querySelector('.name').innerText = cl.tutor_name;
+          c.querySelector('button').tutor_id = cl.tutor_id;
+          let tbd = c.querySelector('tbody');
+          cl.times.forEach(d => {
+            for (let i = 0; i < 3; ++i) {
+              tbd.children[i].children[1 + (d.day + 5) % 7].firstElementChild.checked = d[mapp[i]]
+            }
+          })
+          tutor_list.appendChild(c);
+        })
+      }
+    }).catch(err => console.log(err));
+
+    fetch('/api/total-tutors').then(res => res.json())
+    .then(rs => {
+      for (let i = 0; i < parseInt(rs.result / 20); ++i) {
+        let bt = document.createElement('div');
+        bt.className = 'col btn btn-secondary m-2';
+        if (i + 1 == query.get('page')) bt.classList.replace('btn-secondary', 'btn-success');
+        bt.innerText = i + 1;
+        bt.addEventListener('click', e => document.location = `/tutors?page=${i + 1}`);
+        document.querySelector('#next').insertAdjacentElement('beforebegin', bt);
+      }
+    }).catch(err => console.log(err));
+
+    document.querySelector('#prev').addEventListener('click', e => {
+      let curr = query.get('page') || 0;
+      curr -= 1;
+      document.location = `/tutors${(curr > 0) ? '?page=' + curr : ''}`;
+    })
+    document.querySelector('#next').addEventListener('click', e => {
+      let curr = query.get('page') || 0;
+      curr -= -1;
+      document.location = `/tutors${(curr > 0) ? '?page=' + curr : ''}`;
+    })
+  })
+</script>
